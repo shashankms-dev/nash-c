@@ -58,12 +58,12 @@ int launch(char **args) {
 	pid = fork();
 	if (pid == 0) {
 		if (execvp(args[0], args) == -1) {
-			perror("while executing program");
+			perror("nash");
 		}
 		exit(EXIT_FAILURE);
 	}
 	else if (pid < 0) {		// Error forking
-		perror("while forking");
+		perror("nash");
 	}
 	else {
 		do {
@@ -73,6 +73,50 @@ int launch(char **args) {
 
 	return 1;
 }
+
+int shell_cd(char **args);
+int shell_help(char **args);
+int shell_exit(char **args);
+
+char *builtin_str[] = {
+	"cd",
+	"help"
+	"exit"
+};
+
+int (*builtin_func[]) (char **) = {
+	&shell_cd,
+	&shell_help,
+	&shell_exit
+};
+
+int num_builtins() {
+	return sizeof(builtin_str) / sizeof(char *);
+}
+
+int shell_cd(char **args) {
+	if (args[1] != NULL && chdir(args[1]) != 0) {
+		perror("nash");
+	}
+
+	return 1;
+}
+
+int shell_help(char **args) {
+	printf("nash: a simple, fast shell for Unix-like systems\n");
+	printf("Built-in commands:\n");
+
+	for(int i = 0; i < num_builtins(); i++) {
+		printf("  %s\n", builtin_str[i]);
+	}
+
+	return 1;
+}
+
+int shell_exit(char **args) {
+	return 0;
+}
+
 
 void loop(void) {
 	char prompt = '$';
