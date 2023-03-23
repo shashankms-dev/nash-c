@@ -1,5 +1,5 @@
 # nash
-A simple, clean and fast shell for Unix-like operating systems, written in C.
+A simple and fast shell for Unix-like systems, written in C.
 
-The idea is to have a bash-like shell but with a much smaller codebase and free of the feature creep and bloat that bash has come to be known for.
-I am not yet sure if I want to write this in C and may end up writing it in Rust instead.
+Writing this shell just as a learning project and not intending to make a serious production-grade shell.
+I am not yet sure if I want to write this in C and may end up writing it in Rust instead (i.e. if Rust offers some useful enough abstractions that I don't feel like re-writing).
