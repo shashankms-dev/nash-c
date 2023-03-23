@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/wait.h>
 
 #define TOKEN_BUFSIZE 64
 #define TOKEN_DELIMITER " \t\r\n\a"
