@@ -16,7 +16,7 @@ char *readline(void) {
 			exit(EXIT_SUCCESS);
 		}
 		else {
-			perror("while reading line");
+			perror("nash");
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -82,8 +82,8 @@ int shell_exit(char **args);
 
 char *builtin_str[] = {
 	"cd",
-	"help"
-	"exit"
+	"help",
+	"exit",
 };
 
 int (*builtin_func[]) (char **) = {
