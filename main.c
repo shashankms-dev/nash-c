@@ -4,25 +4,34 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 #define TOKEN_BUFSIZE 64
 #define TOKEN_DELIMITER " \t\r\n\a"
 
 char *gen_prompt() {
-    char *prompt = NULL;
-    char *username, hostname[50];
-    uint64_t n = 50;
+    char *prompt;
+    char *username;
+    char hostname[50];
+    uid_t euid = geteuid();
+
+    struct passwd *pws;
+    pws = getpwuid(euid);
+    username = pws->pw_name;
 
     FILE *fp = fopen("/etc/hostname", "r");
     fscanf(fp, "%s", hostname);
     fclose(fp);
 
-    prompt = malloc(sizeof( char[128] ));
+    prompt = malloc(sizeof( char[160] ));
     strcat(prompt, "[");
+    strcat(prompt, username);
+    strcat(prompt, "@");
     strcat(prompt, hostname);
     strcat(prompt, "]");
 
-    if(geteuid() == 0) {
+    if(euid == 0) {
         strcat(prompt, "#");
     }
     else {
