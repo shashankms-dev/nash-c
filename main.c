@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,6 +7,30 @@
 
 #define TOKEN_BUFSIZE 64
 #define TOKEN_DELIMITER " \t\r\n\a"
+
+char *gen_prompt() {
+    char *prompt = NULL;
+    char *username, hostname[50];
+    uint64_t n = 50;
+
+    FILE *fp = fopen("/etc/hostname", "r");
+    fscanf(fp, "%s", hostname);
+    fclose(fp);
+
+    prompt = malloc(sizeof( char[128] ));
+    strcat(prompt, "[");
+    strcat(prompt, hostname);
+    strcat(prompt, "]");
+
+    if(geteuid() == 0) {
+        strcat(prompt, "#");
+    }
+    else {
+        strcat(prompt, "$");
+    }
+
+    return prompt;
+}
 
 char *readline(void) {
 	char *line = NULL;
@@ -134,21 +159,20 @@ int execute(char **args) {
 }
 
 void loop(void) {
-	char prompt = '$';
+	char *prompt;
 	char *line;
 	char **args;
 	int status = 0;
-	
-	if (geteuid() == 0) {
-		prompt = '#';
-	}
+
+    prompt = gen_prompt();
 
 	do {
-		printf("%c ", prompt);
+		printf("%s ", prompt);
 		line = readline();
 		args = tokenize(line);
 		status = execute(args);
 		
+        free(prompt);
 		free(line);
 		free(args);
     } while(status);
