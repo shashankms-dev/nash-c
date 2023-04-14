@@ -6,25 +6,26 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include "term_control.h"
 
 #define TOKEN_BUFSIZE 64
 #define TOKEN_DELIMITER " \t\r\n\a"
 
-char *gen_prompt() {
-    char *prompt;
-    char *username;
-    char hostname[50];
+char *gen_prompt(void) {
     uid_t euid = geteuid();
+    struct passwd *pws = getpwuid(euid);
+    char *username = pws->pw_name;
 
-    struct passwd *pws;
-    pws = getpwuid(euid);
-    username = pws->pw_name;
+    char hostname[160];
 
     FILE *fp = fopen("/etc/hostname", "r");
     fscanf(fp, "%s", hostname);
     fclose(fp);
 
-    prompt = malloc(sizeof( char[160] ));
+    size_t length = strlen(username) + strlen(hostname) + 5;
+    char *prompt = malloc(sizeof( char[length] ));
+    memset(prompt, 0, length);
+
     strcat(prompt, "[");
     strcat(prompt, username);
     strcat(prompt, "@");
@@ -176,15 +177,16 @@ void loop(void) {
     prompt = gen_prompt();
 
 	do {
-		printf("%s ", prompt);
+		printf("%s%s%s ", TC_B_GRN, prompt, TC_NRM);
 		line = readline();
 		args = tokenize(line);
 		status = execute(args);
 		
-        free(prompt);
 		free(line);
 		free(args);
     } while(status);
+    
+    free(prompt);
 }
  
 int main(int argc, char **argv)
