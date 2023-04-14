@@ -1,18 +1,19 @@
 CC=gcc
 CFLAGS=-Wall
-EXEC=nash
+BIN=nash
+INSTALL_DIR=/usr/local/bin
 
-all: $(EXEC)
+all: $(BIN)
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $^
-
-$(EXEC): main.o
+$(BIN): *.c
 	$(CC) $(CFLAGS) $^ -o $@
 
 clean:
-	rm -f *.o $(EXEC)
+	rm -f *.o $(BIN)
 
 install:
-	chmod 755 $(EXEC)
-	cp $(EXEC) /usr/local/bin/
+	chmod 755 $(BIN)
+	cp -f $(BIN) $(INSTALL_DIR)
+
+uninstall:
+	rm -f $(INSTALL_DIR)/$(BIN)
